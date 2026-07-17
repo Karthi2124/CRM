@@ -1,0 +1,1166 @@
+{
+  "info": {
+    "_postman_id": "crm-enterprise-api-v1",
+    "name": "🚀 Enterprise CRM API",
+    "description": "Production-ready Enterprise CRM API Collection.\n\nBase URL: {{baseUrl}}\n\nAuthentication: Bearer Token (JWT)\n\nSet the `accessToken` variable after login — all protected routes use it automatically via the Collection-level Authorization.\n\nPhases covered:\n- Phase 2: Authentication\n- Phase 3: Roles & Permissions\n- Phase 4: User Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', body.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.data.refreshToken);",
+                  "  pm.test('Login successful', () => pm.expect(body.success).to.be.true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@crm.com\",\n  \"password\": \"Admin@123\",\n  \"rememberMe\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Login Successful",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR...\",\n    \"expiresIn\": 900,\n    \"user\": {\n      \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"first_name\": \"Super\",\n      \"last_name\": \"Admin\",\n      \"email\": \"admin@crm.com\",\n      \"role\": \"Super Admin\"\n    }\n  }\n}"
+            },
+            {
+              "name": "401 – Invalid Credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid email or password\"\n}"
+            },
+            {
+              "name": "422 – Validation Error",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\n    { \"field\": \"email\", \"message\": \"Must be a valid email address\" },\n    { \"field\": \"password\", \"message\": \"Password is required\" }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Logout Successful",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logout successful\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', body.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', body.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["auth", "refresh-token"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Tokens Refreshed",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Token refreshed successfully\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR...\",\n    \"expiresIn\": 900\n  }\n}"
+            },
+            {
+              "name": "401 – Invalid Refresh Token",
+              "code": 401,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid or expired refresh token\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth", "profile"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Profile Data",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profile retrieved successfully\",\n  \"data\": {\n    \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"first_name\": \"Super\",\n    \"last_name\": \"Admin\",\n    \"email\": \"admin@crm.com\",\n    \"phone\": \"+1234567890\",\n    \"status\": \"active\",\n    \"role\": \"Super Admin\",\n    \"last_login_at\": \"2026-07-17T06:00:00.000Z\",\n    \"created_at\": \"2026-07-17T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@crm.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Reset Email Sent (or silently ignored)",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"If your email is registered, you will receive a password reset link shortly.\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<reset_token_from_email>\",\n  \"password\": \"NewPass@123\",\n  \"confirmPassword\": \"NewPass@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["auth", "reset-password"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Password Reset",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password has been reset successfully. Please login with your new password.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "400 – Invalid/Expired Token",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid or expired reset token. Please request a new one.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Admin@123\",\n  \"newPassword\": \"NewPass@456\",\n  \"confirmPassword\": \"NewPass@456\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/change-password", "host": ["{{baseUrl}}"], "path": ["auth", "change-password"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Password Changed",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password changed successfully. Please login again.\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎭 Roles",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/roles?page=1&limit=20&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["roles"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "", "disabled": true }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK – Roles List",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Roles retrieved successfully\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"name\": \"Super Admin\",\n      \"description\": \"Super Administrator with full system access\",\n      \"permissionCount\": 105,\n      \"created_at\": \"2026-07-17T00:00:00.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 6,\n    \"page\": 1,\n    \"limit\": 20,\n    \"totalPages\": 1,\n    \"hasNextPage\": false,\n    \"hasPrevPage\": false\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Role (with permissions)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/roles/:uuid", "host": ["{{baseUrl}}"], "path": ["roles", ":uuid"], "variable": [{ "key": "uuid", "value": "{{roleUuid}}" }] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Role with Permissions",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Role retrieved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"uuid\": \"550e8400...\",\n    \"name\": \"Super Admin\",\n    \"description\": \"Full access\",\n    \"userCount\": 1,\n    \"permissions\": [\n      { \"id\": 1, \"uuid\": \"...\", \"module\": \"users\", \"action\": \"view\", \"key\": \"users.view\", \"description\": \"users — view\" }\n    ],\n    \"created_at\": \"2026-07-17T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Marketing Manager\",\n  \"description\": \"Manages marketing campaigns and leads\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/roles", "host": ["{{baseUrl}}"], "path": ["roles"] }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Role created successfully\",\n  \"data\": {\n    \"id\": 7,\n    \"uuid\": \"...\",\n    \"name\": \"Marketing Manager\",\n    \"description\": \"Manages marketing campaigns and leads\"\n  }\n}"
+            },
+            {
+              "name": "409 – Duplicate Role",
+              "code": 409,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Role \\\"Marketing Manager\\\" already exists\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Marketing Lead\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/roles/:uuid", "host": ["{{baseUrl}}"], "path": ["roles", ":uuid"], "variable": [{ "key": "uuid", "value": "{{roleUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/roles/:uuid", "host": ["{{baseUrl}}"], "path": ["roles", ":uuid"], "variable": [{ "key": "uuid", "value": "{{roleUuid}}" }] }
+          },
+          "response": [
+            {
+              "name": "400 – Cannot Delete Role With Users",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Cannot delete role \\\"Admin\\\" — it is assigned to 3 user(s). Reassign users first.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Assign Permissions to Role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1, 2, 3, 4, 5, 10, 15]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/roles/:uuid/permissions", "host": ["{{baseUrl}}"], "path": ["roles", ":uuid", "permissions"], "variable": [{ "key": "uuid", "value": "{{roleUuid}}" }] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Permissions Synced",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Permissions assigned successfully\",\n  \"data\": { \"...roleWithPermissions\": \"...\" }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔑 Permissions",
+      "item": [
+        {
+          "name": "List All Permissions (Flat)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/permissions", "host": ["{{baseUrl}}"], "path": ["permissions"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – All Permissions",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Permissions retrieved successfully\",\n  \"data\": [\n    { \"id\": 1, \"uuid\": \"...\", \"module\": \"users\", \"action\": \"view\", \"key\": \"users.view\", \"description\": \"users — view\" },\n    { \"id\": 2, \"uuid\": \"...\", \"module\": \"users\", \"action\": \"create\", \"key\": \"users.create\", \"description\": \"users — create\" }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Permissions Grouped by Module",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/permissions/grouped", "host": ["{{baseUrl}}"], "path": ["permissions", "grouped"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Grouped by Module",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Permissions grouped by module\",\n  \"data\": [\n    {\n      \"module\": \"users\",\n      \"permissions\": [\n        { \"id\": 1, \"action\": \"view\", \"key\": \"users.view\" },\n        { \"id\": 2, \"action\": \"create\", \"key\": \"users.create\" },\n        { \"id\": 3, \"action\": \"edit\", \"key\": \"users.edit\" },\n        { \"id\": 4, \"action\": \"delete\", \"key\": \"users.delete\" }\n      ]\n    },\n    {\n      \"module\": \"customers\",\n      \"permissions\": [\n        { \"id\": 9, \"action\": \"view\", \"key\": \"customers.view\" }\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=20&search=&status=active&sort=created_at&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "status", "value": "active", "disabled": true },
+                { "key": "role_id", "value": "1", "disabled": true },
+                { "key": "sort", "value": "created_at" },
+                { "key": "order", "value": "DESC" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK – Users List",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Users retrieved successfully\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"uuid\": \"550e8400-...\",\n      \"employee_id\": \"EMP001\",\n      \"first_name\": \"Super\",\n      \"last_name\": \"Admin\",\n      \"full_name\": \"Super Admin\",\n      \"email\": \"admin@crm.com\",\n      \"phone\": \"+1234567890\",\n      \"avatar_url\": null,\n      \"status\": \"active\",\n      \"role\": { \"id\": 1, \"uuid\": \"...\", \"name\": \"Super Admin\" },\n      \"last_login_at\": \"2026-07-17T06:00:00.000Z\",\n      \"created_at\": \"2026-07-17T00:00:00.000Z\"\n    }\n  ],\n  \"meta\": { \"total\": 1, \"page\": 1, \"limit\": 20, \"totalPages\": 1, \"hasNextPage\": false, \"hasPrevPage\": false }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/:uuid", "host": ["{{baseUrl}}"], "path": ["users", ":uuid"], "variable": [{ "key": "uuid", "value": "{{userUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"StrongPass@123\",\n  \"phone\": \"+9876543210\",\n  \"role_id\": 3,\n  \"status\": \"active\",\n  \"employee_id\": \"EMP002\",\n  \"address\": \"123 Main St, City\",\n  \"date_of_birth\": \"1990-05-15\",\n  \"gender\": \"male\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"User created successfully\",\n  \"data\": { \"...userObject\": \"...\" }\n}"
+            },
+            {
+              "name": "409 – Email Already Registered",
+              "code": 409,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Email \\\"john.doe@company.com\\\" is already registered\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jonathan\",\n  \"phone\": \"+1111111111\",\n  \"address\": \"456 New St\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/:uuid", "host": ["{{baseUrl}}"], "path": ["users", ":uuid"], "variable": [{ "key": "uuid", "value": "{{userUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/users/:uuid", "host": ["{{baseUrl}}"], "path": ["users", ":uuid"], "variable": [{ "key": "uuid", "value": "{{userUuid}}" }] }
+          }
+        },
+        {
+          "name": "Bulk Delete Users",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uuids\": [\n    \"550e8400-e29b-41d4-a716-446655440001\",\n    \"550e8400-e29b-41d4-a716-446655440002\"\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/bulk-delete", "host": ["{{baseUrl}}"], "path": ["users", "bulk-delete"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – Bulk Deleted",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"2 user(s) deleted successfully\",\n  \"data\": { \"deletedCount\": 2 }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/:uuid/status", "host": ["{{baseUrl}}"], "path": ["users", ":uuid", "status"], "variable": [{ "key": "uuid", "value": "{{userUuid}}" }] }
+          }
+        },
+        {
+          "name": "Admin Reset User Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"TempPass@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/:uuid/reset-password", "host": ["{{baseUrl}}"], "path": ["users", ":uuid", "reset-password"], "variable": [{ "key": "uuid", "value": "{{userUuid}}" }] }
+          }
+        },
+        {
+          "name": "Export Users CSV",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/users/export", "host": ["{{baseUrl}}"], "path": ["users", "export"] }
+          },
+          "response": [
+            {
+              "name": "200 OK – CSV Download",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                { "key": "Content-Type", "value": "text/csv" },
+                { "key": "Content-Disposition", "value": "attachment; filename=\"users.csv\"" }
+              ],
+              "body": "Employee ID,First Name,Last Name,Email,Phone,Role,Status,Last Login,Created At\nEMP001,Super,Admin,admin@crm.com,+1234567890,Super Admin,active,2026-07-17T06:00:00.000Z,2026-07-17T00:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏢 Companies",
+      "item": [
+        {
+          "name": "List Companies",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies?page=1&limit=20&search=", "host": ["{{baseUrl}}"], "path": ["companies"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }] }
+          }
+        },
+        {
+          "name": "Get Company",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", ":uuid"], "variable": [{ "key": "uuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Company",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corp\",\n  \"legal_name\": \"Acme Corporation Ltd.\",\n  \"email\": \"contact@acme.com\",\n  \"phone\": \"+15551234\",\n  \"website\": \"https://acme.com\",\n  \"tax_number\": \"TAX-12345-67\",\n  \"address\": \"100 Acme Way, Industrial Park\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies", "host": ["{{baseUrl}}"], "path": ["companies"] }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"legal_name\": \"Acme Global Corporation\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", ":uuid"], "variable": [{ "key": "uuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Company",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/companies/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", ":uuid"], "variable": [{ "key": "uuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Org Structure",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/:uuid/structure", "host": ["{{baseUrl}}"], "path": ["companies", ":uuid", "structure"], "variable": [{ "key": "uuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Branches",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/:companyUuid/branches", "host": ["{{baseUrl}}"], "path": ["companies", ":companyUuid", "branches"], "variable": [{ "key": "companyUuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Branch",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"East Coast Office\",\n  \"email\": \"east@acme.com\",\n  \"phone\": \"+15559876\",\n  \"address\": \"456 Broadway, New York\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/:companyUuid/branches", "host": ["{{baseUrl}}"], "path": ["companies", ":companyUuid", "branches"], "variable": [{ "key": "companyUuid", "value": "{{companyUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Branch",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/branches/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "branches", ":uuid"], "variable": [{ "key": "uuid", "value": "{{branchUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Branch",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Northeast Headquarters\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/branches/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "branches", ":uuid"], "variable": [{ "key": "uuid", "value": "{{branchUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Branch",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/companies/branches/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "branches", ":uuid"], "variable": [{ "key": "uuid", "value": "{{branchUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/branches/:branchUuid/departments", "host": ["{{baseUrl}}"], "path": ["companies", "branches", ":branchUuid", "departments"], "variable": [{ "key": "branchUuid", "value": "{{branchUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sales Department\",\n  \"description\": \"Handles sales and pipelines\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/branches/:branchUuid/departments", "host": ["{{baseUrl}}"], "path": ["companies", "branches", ":branchUuid", "departments"], "variable": [{ "key": "branchUuid", "value": "{{branchUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Department",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/departments/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "departments", ":uuid"], "variable": [{ "key": "uuid", "value": "{{deptUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Sales, Leads, & Customers\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/departments/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "departments", ":uuid"], "variable": [{ "key": "uuid", "value": "{{deptUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/companies/departments/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "departments", ":uuid"], "variable": [{ "key": "uuid", "value": "{{deptUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Designations",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/departments/:deptUuid/designations", "host": ["{{baseUrl}}"], "path": ["companies", "departments", ":deptUuid", "designations"], "variable": [{ "key": "deptUuid", "value": "{{deptUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Designation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sales Manager\",\n  \"description\": \"Manages lead qualification and closure\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/departments/:deptUuid/designations", "host": ["{{baseUrl}}"], "path": ["companies", "departments", ":deptUuid", "designations"], "variable": [{ "key": "deptUuid", "value": "{{deptUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Designation",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/companies/designations/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "designations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{desigUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Designation",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Senior Sales Executive\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies/designations/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "designations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{desigUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Designation",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/companies/designations/:uuid", "host": ["{{baseUrl}}"], "path": ["companies", "designations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{desigUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/customers?page=1&limit=20&search=&type=&status=", "host": ["{{baseUrl}}"], "path": ["customers"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "type", "value": "" }, { "key": "status", "value": "" }] }
+          }
+        },
+        {
+          "name": "Get Customer",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/customers/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", ":uuid"], "variable": [{ "key": "uuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Global Industries Inc.\",\n  \"type\": \"company\",\n  \"email\": \"procurement@globalind.com\",\n  \"phone\": \"+1888443322\",\n  \"website\": \"https://globalind.com\",\n  \"gst_number\": \"GST-GLOBAL-99\",\n  \"tax_id\": \"TX-998877\",\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1888443300\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", ":uuid"], "variable": [{ "key": "uuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/customers/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", ":uuid"], "variable": [{ "key": "uuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Customer Timeline",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/customers/:uuid/timeline", "host": ["{{baseUrl}}"], "path": ["customers", ":uuid", "timeline"], "variable": [{ "key": "uuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Customer Address",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"billing\",\n  \"address_line_1\": \"123 Industrial Way\",\n  \"city\": \"Chicago\",\n  \"state\": \"Illinois\",\n  \"country\": \"USA\",\n  \"zip_code\": \"60601\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:customerUuid/addresses", "host": ["{{baseUrl}}"], "path": ["customers", ":customerUuid", "addresses"], "variable": [{ "key": "customerUuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Customer Address",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address_line_1\": \"123 Industrial Blvd\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/addresses/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "addresses", ":uuid"], "variable": [{ "key": "uuid", "value": "{{addressUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Customer Address",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/customers/addresses/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "addresses", ":uuid"], "variable": [{ "key": "uuid", "value": "{{addressUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Customer Contact",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"email\": \"janesmith@globalind.com\",\n  \"phone\": \"+1888443311\",\n  \"designation\": \"Purchasing Manager\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:customerUuid/contacts", "host": ["{{baseUrl}}"], "path": ["customers", ":customerUuid", "contacts"], "variable": [{ "key": "customerUuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Customer Contact",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"designation\": \"Director of Procurement\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/contacts/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "contacts", ":uuid"], "variable": [{ "key": "uuid", "value": "{{contactUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Customer Contact",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/customers/contacts/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "contacts", ":uuid"], "variable": [{ "key": "uuid", "value": "{{contactUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Customer Notes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/customers/:customerUuid/notes", "host": ["{{baseUrl}}"], "path": ["customers", ":customerUuid", "notes"], "variable": [{ "key": "customerUuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Customer Note",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Discussed the annual contract options. Client wants shipping discounts.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:customerUuid/notes", "host": ["{{baseUrl}}"], "path": ["customers", ":customerUuid", "notes"], "variable": [{ "key": "customerUuid", "value": "{{customerUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Customer Note",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Updated contract options notes with pricing estimates.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/notes/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "notes", ":uuid"], "variable": [{ "key": "uuid", "value": "{{noteUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Customer Note",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/customers/notes/:uuid", "host": ["{{baseUrl}}"], "path": ["customers", "notes", ":uuid"], "variable": [{ "key": "uuid", "value": "{{noteUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📢 Leads",
+      "item": [
+        {
+          "name": "List Leads",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads?page=1&limit=20&search=&status=&source=&assigned_to=", "host": ["{{baseUrl}}"], "path": ["leads"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "source", "value": "" }, { "key": "assigned_to", "value": "" }] }
+          }
+        },
+        {
+          "name": "Get Lead",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", ":uuid"], "variable": [{ "key": "uuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Lead",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Michael\",\n  \"last_name\": \"Scott\",\n  \"company_name\": \"Dunder Mifflin Paper Company\",\n  \"email\": \"mscott@dundermifflin.com\",\n  \"phone\": \"+15550199\",\n  \"source\": \"referral\",\n  \"status\": \"new\",\n  \"value\": 5000.00\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads", "host": ["{{baseUrl}}"], "path": ["leads"] }
+          }
+        },
+        {
+          "name": "Update Lead",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\",\n  \"value\": 6000.00\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", ":uuid"], "variable": [{ "key": "uuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Assign Lead",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 3\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/:uuid/assign", "host": ["{{baseUrl}}"], "path": ["leads", ":uuid", "assign"], "variable": [{ "key": "uuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Lead",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/leads/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", ":uuid"], "variable": [{ "key": "uuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Lead Timeline",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads/:uuid/timeline", "host": ["{{baseUrl}}"], "path": ["leads", ":uuid", "timeline"], "variable": [{ "key": "uuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Lead Notes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/notes", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "notes"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Lead Note",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Discussed paper orders. Client interested in eco-friendly stocks.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/notes", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "notes"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Lead Note",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/leads/notes/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", "notes", ":uuid"], "variable": [{ "key": "uuid", "value": "{{noteUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Lead Followups",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/followups", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "followups"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Lead Followup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"followup_date\": \"2026-07-25T10:00:00.000Z\",\n  \"remarks\": \"Follow-up call to finalize contract value\",\n  \"status\": \"pending\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/followups", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "followups"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Lead Followup",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/followups/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", "followups", ":uuid"], "variable": [{ "key": "uuid", "value": "{{followupUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Lead Followup",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/leads/followups/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", "followups", ":uuid"], "variable": [{ "key": "uuid", "value": "{{followupUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Lead Activities",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/activities", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "activities"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Record Lead Activity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"call\",\n  \"details\": \"Called the lead. Outlined the pricing and shipping schedule.\",\n  \"activity_date\": \"2026-07-17T12:00:00.000Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/leads/:leadUuid/activities", "host": ["{{baseUrl}}"], "path": ["leads", ":leadUuid", "activities"], "variable": [{ "key": "leadUuid", "value": "{{leadUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Lead Activity",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/leads/activities/:uuid", "host": ["{{baseUrl}}"], "path": ["leads", "activities", ":uuid"], "variable": [{ "key": "uuid", "value": "{{activityUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💼 Opportunities",
+      "item": [
+        {
+          "name": "List Opportunities",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities?page=1&limit=20&search=&stage_id=&assigned_to=", "host": ["{{baseUrl}}"], "path": ["opportunities"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "stage_id", "value": "" }, { "key": "assigned_to", "value": "" }] }
+          }
+        },
+        {
+          "name": "Get Opportunity",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", ":uuid"], "variable": [{ "key": "uuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Create Opportunity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Enterprise Software Licensing\",\n  \"customer_id\": 1,\n  \"lead_id\": 1,\n  \"stage_id\": 1,\n  \"value\": 50000.00,\n  \"probability\": 10,\n  \"close_date\": \"2026-12-31T23:59:59.000Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities", "host": ["{{baseUrl}}"], "path": ["opportunities"] }
+          }
+        },
+        {
+          "name": "Update Opportunity",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stage_id\": 5,\n  \"probability\": 75\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", ":uuid"], "variable": [{ "key": "uuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Assign Opportunity",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 3\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities/:uuid/assign", "host": ["{{baseUrl}}"], "path": ["opportunities", ":uuid", "assign"], "variable": [{ "key": "uuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Opportunity",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/opportunities/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", ":uuid"], "variable": [{ "key": "uuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Opportunity Timeline",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities/:uuid/timeline", "host": ["{{baseUrl}}"], "path": ["opportunities", ":uuid", "timeline"], "variable": [{ "key": "uuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Opportunity Stages",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities/stages", "host": ["{{baseUrl}}"], "path": ["opportunities", "stages"] }
+          }
+        },
+        {
+          "name": "List Competitors",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities/:oppUuid/competitors", "host": ["{{baseUrl}}"], "path": ["opportunities", ":oppUuid", "competitors"], "variable": [{ "key": "oppUuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Competitor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"competitor_name\": \"Initech Systems Ltd.\",\n  \"strength\": \"Established market share, low pricing structure\",\n  \"weakness\": \"Poor customer reviews, lacking enterprise support SLAs\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities/:oppUuid/competitors", "host": ["{{baseUrl}}"], "path": ["opportunities", ":oppUuid", "competitors"], "variable": [{ "key": "oppUuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Competitor Details",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"strength\": \"Updated competitor strengths\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities/competitors/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", "competitors", ":uuid"], "variable": [{ "key": "uuid", "value": "{{competitorUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Competitor",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/opportunities/competitors/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", "competitors", ":uuid"], "variable": [{ "key": "uuid", "value": "{{competitorUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Opportunity Notes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/opportunities/:oppUuid/notes", "host": ["{{baseUrl}}"], "path": ["opportunities", ":oppUuid", "notes"], "variable": [{ "key": "oppUuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Opportunity Note",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Discussed proposal details. Decision maker requested formal quote conversion next week.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/opportunities/:oppUuid/notes", "host": ["{{baseUrl}}"], "path": ["opportunities", ":oppUuid", "notes"], "variable": [{ "key": "oppUuid", "value": "{{oppUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Opportunity Note",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/opportunities/notes/:uuid", "host": ["{{baseUrl}}"], "path": ["opportunities", "notes", ":uuid"], "variable": [{ "key": "uuid", "value": "{{noteUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "❤️ Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "http://localhost:5000/health", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["health"] }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"CRM API is running\",\n  \"version\": \"1.0.0\",\n  \"environment\": \"development\",\n  \"timestamp\": \"2026-07-17T06:00:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
