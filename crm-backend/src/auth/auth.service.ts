@@ -49,16 +49,14 @@ export class AuthService {
   }
 
   // ─── Build JWT Payload Utility ────────────────────────────────────────────
-  private buildJwtPayload(user: any, roleName: string, permissions: string[]): JwtPayload {
+  private buildJwtPayload(user: any, roleName: string): JwtPayload {
     return {
       userId: user.id,
       userUuid: user.uuid,
       email: user.email,
       role: roleName,
-      permissions,
     };
   }
-
   // ─── Sign Tokens ──────────────────────────────────────────────────────────
   private signAccessToken(payload: JwtPayload, rememberMe = false): string {
     return jwt.sign(payload, this.jwtSecret, {
@@ -95,9 +93,11 @@ export class AuthService {
     );
 
     const rememberMe = dto.rememberMe ?? false;
-    const jwtPayload = this.buildJwtPayload(user, roleName, permissions);
+    const jwtPayload = this.buildJwtPayload(user, roleName);
     const accessToken = this.signAccessToken(jwtPayload, rememberMe);
     const refreshToken = this.signRefreshToken(user.id, user.uuid, rememberMe);
+    console.log("Permissions Count:", permissions.length);
+    console.log("JWT Length:", accessToken.length);
 
     const expiresAt = new Date(
       Date.now() + (rememberMe ? this.rememberMeRefreshExpiryMs : this.refreshTokenExpiryMs)
@@ -163,12 +163,9 @@ export class AuthService {
     if (!user || user.status !== 'active') throw new UnauthorizedError('User not found or inactive');
 
     const roleName = (user as any).role?.name || 'User';
-    const permissions: string[] = (((user as any).role?.permissions) || []).map(
-      (p: any) => `${p.module}.${p.action}`
-    );
 
     // 4. Issue new tokens (refresh token rotation)
-    const jwtPayload = this.buildJwtPayload(user, roleName, permissions);
+    const jwtPayload = this.buildJwtPayload(user, roleName);
     const newAccessToken = this.signAccessToken(jwtPayload);
     const newRefreshToken = this.signRefreshToken(user.id, user.uuid);
     const expiresAt = new Date(Date.now() + this.refreshTokenExpiryMs);

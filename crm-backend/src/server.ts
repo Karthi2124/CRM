@@ -17,6 +17,19 @@ import customersRoutes from './customers/customers.routes';
 import leadsRoutes from './leads/leads.routes';
 import opportunitiesRoutes from './opportunities/opportunities.routes';
 import productsRoutes from './products/products.routes';
+import quotationsRoutes from './quotations/quotations.routes';
+import invoicesRoutes from './invoices/invoices.routes';
+import tasksRoutes from './tasks/tasks.routes';
+import calendarRoutes from './calendar/calendar.routes';
+import notificationsRoutes from './notifications/notifications.routes';
+import dashboardRoutes from './dashboard/dashboard.routes';
+import reportsRoutes from './reports/reports.routes';
+import filesRoutes from './files/files.routes';
+import auditLogsRoutes from './audit-logs/audit-logs.routes';
+import settingsRoutes from './settings/settings.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.config';
+import { seedDefaultTemplates } from './notifications/notifications.service';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -63,6 +76,17 @@ app.use('/api/customers', customersRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/opportunities', opportunitiesRoutes);
 app.use('/api/products', productsRoutes);
+app.use('/api/quotations', quotationsRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/files', filesRoutes);
+app.use('/api/audit-logs', auditLogsRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -81,6 +105,14 @@ async function startServer() {
   if (!isConnected) {
     logger.error('Shutting down — Database connection failed.');
     process.exit(1);
+  }
+
+  // Seed notification templates
+  try {
+    await seedDefaultTemplates();
+    logger.info('✅ Notification templates seeded successfully');
+  } catch (err: any) {
+    logger.error(`❌ Failed to seed notification templates: ${err.message}`);
   }
 
   const HOST = '0.0.0.0';

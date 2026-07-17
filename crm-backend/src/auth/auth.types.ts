@@ -9,7 +9,6 @@ export interface JwtPayload {
   userUuid: string;
   email: string;
   role: string;
-  permissions?: string[];
 }
 
 export interface LoginResponse {

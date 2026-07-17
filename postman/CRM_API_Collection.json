@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "crm-enterprise-api-v1",
-    "name": "🚀 Enterprise CRM API",
+    "name": "Enterprise CRM API",
     "description": "Production-ready Enterprise CRM API Collection.\n\nBase URL: {{baseUrl}}\n\nAuthentication: Bearer Token (JWT)\n\nSet the `accessToken` variable after login — all protected routes use it automatically via the Collection-level Authorization.\n\nPhases covered:\n- Phase 2: Authentication\n- Phase 3: Roles & Permissions\n- Phase 4: User Management",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -10,13 +10,13 @@
     "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "baseUrl", "value": "http://localhost:8000/api", "type": "string" },
     { "key": "accessToken", "value": "", "type": "string" },
     { "key": "refreshToken", "value": "", "type": "string" }
   ],
   "item": [
     {
-      "name": "🔐 Auth",
+      "name": "Auth",
       "item": [
         {
           "name": "Login",
@@ -207,7 +207,7 @@
       ]
     },
     {
-      "name": "🎭 Roles",
+      "name": "Roles",
       "item": [
         {
           "name": "List Roles",
@@ -318,7 +318,7 @@
       ]
     },
     {
-      "name": "🔑 Permissions",
+      "name": "Permissions",
       "item": [
         {
           "name": "List All Permissions (Flat)",
@@ -351,7 +351,7 @@
       ]
     },
     {
-      "name": "👥 Users",
+      "name": "Users",
       "item": [
         {
           "name": "List Users",
@@ -495,7 +495,7 @@
       ]
     },
     {
-      "name": "🏢 Companies",
+      "name": "Companies",
       "item": [
         {
           "name": "List Companies",
@@ -687,7 +687,7 @@
       ]
     },
     {
-      "name": "👥 Customers",
+      "name": "Customers",
       "item": [
         {
           "name": "List Customers",
@@ -844,7 +844,7 @@
       ]
     },
     {
-      "name": "📢 Leads",
+      "name": "Leads",
       "item": [
         {
           "name": "List Leads",
@@ -1003,7 +1003,7 @@
       ]
     },
     {
-      "name": "💼 Opportunities",
+      "name": "Opportunities",
       "item": [
         {
           "name": "List Opportunities",
@@ -1143,14 +1143,599 @@
       ]
     },
     {
-      "name": "❤️ Health",
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/products?page=1&limit=20&search=&status=active", "host": ["{{baseUrl}}"], "path": ["products"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "active" }] }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Enterprise Cloud Storage\",\n  \"sku\": \"ECS-100GB\",\n  \"base_price\": 10.00,\n  \"selling_price\": 15.00,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "Get Product Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/products/:uuid", "host": ["{{baseUrl}}"], "path": ["products", ":uuid"], "variable": [{ "key": "uuid", "value": "{{productUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"selling_price\": 14.50\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products/:uuid", "host": ["{{baseUrl}}"], "path": ["products", ":uuid"], "variable": [{ "key": "uuid", "value": "{{productUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/products/:uuid", "host": ["{{baseUrl}}"], "path": ["products", ":uuid"], "variable": [{ "key": "uuid", "value": "{{productUuid}}" }] }
+          }
+        },
+        {
+          "name": "List Product Categories",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/products/categories", "host": ["{{baseUrl}}"], "path": ["products", "categories"] }
+          }
+        },
+        {
+          "name": "Create Product Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cloud Infrastructure\",\n  \"description\": \"Virtual machines, storage, and networking products\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products/categories", "host": ["{{baseUrl}}"], "path": ["products", "categories"] }
+          }
+        },
+        {
+          "name": "List Product Price Lists",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/products/:uuid/price-lists", "host": ["{{baseUrl}}"], "path": ["products", ":uuid", "price-lists"], "variable": [{ "key": "uuid", "value": "{{productUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Product Price List Entry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wholesale Tier 1\",\n  \"price\": 12.00,\n  \"min_quantity\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products/:uuid/price-lists", "host": ["{{baseUrl}}"], "path": ["products", ":uuid", "price-lists"], "variable": [{ "key": "uuid", "value": "{{productUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quotations",
+      "item": [
+        {
+          "name": "List Quotations",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/quotations?page=1&limit=20&search=&status=&customer_id=", "host": ["{{baseUrl}}"], "path": ["quotations"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "customer_id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create Quotation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"subject\": \"Enterprise Cloud Architecture & Licensing Setup\",\n  \"date\": \"2026-07-17\",\n  \"expiry_date\": \"2026-08-17\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 5,\n  \"adjustment\": 100.00,\n  \"status\": \"draft\",\n  \"terms_conditions\": \"Standard terms and conditions apply. Payment terms Net-30.\",\n  \"customer_notes\": \"Thank you for your business!\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"description\": \"Enterprise Cloud Storage Subscription (1 Year)\",\n      \"quantity\": 12,\n      \"unit_price\": 150.00,\n      \"discount_type\": \"percentage\",\n      \"discount_value\": 10,\n      \"tax_id\": 3\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/quotations", "host": ["{{baseUrl}}"], "path": ["quotations"] }
+          }
+        },
+        {
+          "name": "Get Quotation Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/quotations/:uuid", "host": ["{{baseUrl}}"], "path": ["quotations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{quotationUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Quotation",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sent\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/quotations/:uuid", "host": ["{{baseUrl}}"], "path": ["quotations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{quotationUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Quotation",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/quotations/:uuid", "host": ["{{baseUrl}}"], "path": ["quotations", ":uuid"], "variable": [{ "key": "uuid", "value": "{{quotationUuid}}" }] }
+          }
+        },
+        {
+          "name": "Download Quotation PDF Document",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/quotations/:uuid/pdf", "host": ["{{baseUrl}}"], "path": ["quotations", ":uuid", "pdf"], "variable": [{ "key": "uuid", "value": "{{quotationUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "List Invoices",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/invoices?page=1&limit=20&search=&status=&customer_id=", "host": ["{{baseUrl}}"], "path": ["invoices"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "customer_id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"subject\": \"Enterprise Cloud Architecture & Licensing Setup (Billing)\",\n  \"date\": \"2026-07-17\",\n  \"due_date\": \"2026-08-17\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 5,\n  \"adjustment\": 50.00,\n  \"status\": \"draft\",\n  \"terms_conditions\": \"Standard invoice terms apply. Please pay within 30 days.\",\n  \"customer_notes\": \"Thank you for your business!\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"description\": \"Enterprise Cloud Storage Subscription (1 Year)\",\n      \"quantity\": 12,\n      \"unit_price\": 150.00,\n      \"discount_type\": \"percentage\",\n      \"discount_value\": 10,\n      \"tax_id\": 3\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices", "host": ["{{baseUrl}}"], "path": ["invoices"] }
+          }
+        },
+        {
+          "name": "Get Invoice Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Invoice Details",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sent\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        },
+        {
+          "name": "Record Payment against Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500.00,\n  \"payment_date\": \"2026-07-17\",\n  \"payment_method\": \"bank_transfer\",\n  \"transaction_reference\": \"TXN-982341234\",\n  \"notes\": \"Received wire transfer payment\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid/payments", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid", "payments"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        },
+        {
+          "name": "Issue Credit Note for Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00,\n  \"credit_note_date\": \"2026-07-17\",\n  \"reason\": \"Promotional goodwill discount discount applied after billing\",\n  \"status\": \"applied\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid/credit-notes", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid", "credit-notes"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        },
+        {
+          "name": "Download Invoice PDF Document",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid/pdf", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid", "pdf"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Invoice",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/invoices/:uuid", "host": ["{{baseUrl}}"], "path": ["invoices", ":uuid"], "variable": [{ "key": "uuid", "value": "{{invoiceUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "List Tasks",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/tasks?page=1&limit=20&search=&status=&priority=&assigned_to=", "host": ["{{baseUrl}}"], "path": ["tasks"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "priority", "value": "" }, { "key": "assigned_to", "value": "" }] }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Follow up on licensing proposal\",\n  \"description\": \"Call client decision maker to finalize subscription details.\",\n  \"status\": \"todo\",\n  \"priority\": \"high\",\n  \"due_date\": \"2026-07-20\",\n  \"assigned_to\": 1,\n  \"customer_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tasks", "host": ["{{baseUrl}}"], "path": ["tasks"] }
+          }
+        },
+        {
+          "name": "Get Task Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/tasks/:uuid", "host": ["{{baseUrl}}"], "path": ["tasks", ":uuid"], "variable": [{ "key": "uuid", "value": "{{taskUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Task Details",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_progress\",\n  \"priority\": \"critical\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tasks/:uuid", "host": ["{{baseUrl}}"], "path": ["tasks", ":uuid"], "variable": [{ "key": "uuid", "value": "{{taskUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Task Comment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comment\": \"Decision maker was out of office. Re-scheduling call for tomorrow morning.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tasks/:uuid/comments", "host": ["{{baseUrl}}"], "path": ["tasks", ":uuid", "comments"], "variable": [{ "key": "uuid", "value": "{{taskUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Task Comment",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/tasks/comments/:commentUuid", "host": ["{{baseUrl}}"], "path": ["tasks", "comments", ":commentUuid"], "variable": [{ "key": "commentUuid", "value": "{{commentUuid}}" }] }
+          }
+        },
+        {
+          "name": "Add Task Attachment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file_name\": \"requirements.pdf\",\n  \"file_url\": \"https://s3.amazonaws.com/crm-attachments/requirements.pdf\",\n  \"file_size\": 102400,\n  \"mime_type\": \"application/pdf\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tasks/:uuid/attachments", "host": ["{{baseUrl}}"], "path": ["tasks", ":uuid", "attachments"], "variable": [{ "key": "uuid", "value": "{{taskUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Task Attachment",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/tasks/attachments/:attachmentUuid", "host": ["{{baseUrl}}"], "path": ["tasks", "attachments", ":attachmentUuid"], "variable": [{ "key": "attachmentUuid", "value": "{{attachmentUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/tasks/:uuid", "host": ["{{baseUrl}}"], "path": ["tasks", ":uuid"], "variable": [{ "key": "uuid", "value": "{{taskUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calendar",
+      "item": [
+        {
+          "name": "List Calendar Events",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/calendar?page=1&limit=20&search=&status=&start_after=&end_before=&assigned_to=", "host": ["{{baseUrl}}"], "path": ["calendar"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "start_after", "value": "" }, { "key": "end_before", "value": "" }, { "key": "assigned_to", "value": "" }] }
+          }
+        },
+        {
+          "name": "Schedule Calendar Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Enterprise Licensing Integration Briefing\",\n  \"description\": \"Review licensing scope, API integration steps, and timeline with developers.\",\n  \"start_date\": \"2026-07-20T10:00:00Z\",\n  \"end_date\": \"2026-07-20T11:00:00Z\",\n  \"location\": \"Conference Room B\",\n  \"is_all_day\": false,\n  \"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n  \"status\": \"scheduled\",\n  \"customer_id\": 1,\n  \"assigned_to\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/calendar", "host": ["{{baseUrl}}"], "path": ["calendar"] }
+          }
+        },
+        {
+          "name": "Get Calendar Event Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/calendar/:uuid", "host": ["{{baseUrl}}"], "path": ["calendar", ":uuid"], "variable": [{ "key": "uuid", "value": "{{eventUuid}}" }] }
+          }
+        },
+        {
+          "name": "Update Calendar Event Details",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"location\": \"Main Boardroom\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/calendar/:uuid", "host": ["{{baseUrl}}"], "path": ["calendar", ":uuid"], "variable": [{ "key": "uuid", "value": "{{eventUuid}}" }] }
+          }
+        },
+        {
+          "name": "Sync Event to Google or Outlook Calendar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"google\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/calendar/:uuid/sync", "host": ["{{baseUrl}}"], "path": ["calendar", ":uuid", "sync"], "variable": [{ "key": "uuid", "value": "{{eventUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete Calendar Event",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/calendar/:uuid", "host": ["{{baseUrl}}"], "path": ["calendar", ":uuid"], "variable": [{ "key": "uuid", "value": "{{eventUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List My Notifications",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/notifications?page=1&limit=20&is_read=false", "host": ["{{baseUrl}}"], "path": ["notifications"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "is_read", "value": "false" }] }
+          }
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/notifications/read-all", "host": ["{{baseUrl}}"], "path": ["notifications", "read-all"] }
+          }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/notifications/:uuid/read", "host": ["{{baseUrl}}"], "path": ["notifications", ":uuid", "read"], "variable": [{ "key": "uuid", "value": "{{notificationUuid}}" }] }
+          }
+        },
+        {
+          "name": "Get Notification Preferences",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/notifications/preferences", "host": ["{{baseUrl}}"], "path": ["notifications", "preferences"] }
+          }
+        },
+        {
+          "name": "Update Notification Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferences\": [\n    {\n      \"notification_type\": \"lead_assigned\",\n      \"email\": true,\n      \"in_app\": true,\n      \"sms\": true\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/notifications/preferences", "host": ["{{baseUrl}}"], "path": ["notifications", "preferences"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get KPI Summary Metrics",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/dashboard/kpis", "host": ["{{baseUrl}}"], "path": ["dashboard", "kpis"] }
+          }
+        },
+        {
+          "name": "Get Chart Metrics Feeds",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/dashboard/charts", "host": ["{{baseUrl}}"], "path": ["dashboard", "charts"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Get Leads Report (JSON)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/leads?start_date=2026-07-01&end_date=2026-07-31&format=json", "host": ["{{baseUrl}}"], "path": ["reports", "leads"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "json" }] }
+          }
+        },
+        {
+          "name": "Export Leads Report (CSV)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/leads?start_date=2026-07-01&end_date=2026-07-31&format=csv", "host": ["{{baseUrl}}"], "path": ["reports", "leads"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "csv" }] }
+          }
+        },
+        {
+          "name": "Get Sales Report (JSON)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/sales?start_date=2026-07-01&end_date=2026-07-31&format=json", "host": ["{{baseUrl}}"], "path": ["reports", "sales"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "json" }] }
+          }
+        },
+        {
+          "name": "Export Sales Report (CSV)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/sales?start_date=2026-07-01&end_date=2026-07-31&format=csv", "host": ["{{baseUrl}}"], "path": ["reports", "sales"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "csv" }] }
+          }
+        },
+        {
+          "name": "Get Tasks Report (JSON)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/tasks?start_date=2026-07-01&end_date=2026-07-31&format=json", "host": ["{{baseUrl}}"], "path": ["reports", "tasks"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "json" }] }
+          }
+        },
+        {
+          "name": "Export Tasks Report (CSV)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/tasks?start_date=2026-07-01&end_date=2026-07-31&format=csv", "host": ["{{baseUrl}}"], "path": ["reports", "tasks"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "csv" }] }
+          }
+        },
+        {
+          "name": "Get Revenue Report (JSON)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/revenue?start_date=2026-07-01&end_date=2026-07-31&format=json", "host": ["{{baseUrl}}"], "path": ["reports", "revenue"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "json" }] }
+          }
+        },
+        {
+          "name": "Export Revenue Report (CSV)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reports/revenue?start_date=2026-07-01&end_date=2026-07-31&format=csv", "host": ["{{baseUrl}}"], "path": ["reports", "revenue"], "query": [{ "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }, { "key": "format", "value": "csv" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Secure Upload File",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/files/upload", "host": ["{{baseUrl}}"], "path": ["files", "upload"] }
+          }
+        },
+        {
+          "name": "Secure Download File",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/files/download/:uuid", "host": ["{{baseUrl}}"], "path": ["files", "download", ":uuid"], "variable": [{ "key": "uuid", "value": "{{fileUuid}}" }] }
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/files/:uuid", "host": ["{{baseUrl}}"], "path": ["files", ":uuid"], "variable": [{ "key": "uuid", "value": "{{fileUuid}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "List Audit Logs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/audit-logs?page=1&limit=10&module=leads&action=update&start_date=2026-07-01&end_date=2026-07-31", "host": ["{{baseUrl}}"], "path": ["audit-logs"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "module", "value": "leads" }, { "key": "action", "value": "update" }, { "key": "start_date", "value": "2026-07-01" }, { "key": "end_date", "value": "2026-07-31" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get All Settings",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/settings", "host": ["{{baseUrl}}"], "path": ["settings"] }
+          }
+        },
+        {
+          "name": "Update Company Settings",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Acme Corporation Ltd\",\n  \"company_email\": \"billing@acme.corp\",\n  \"company_phone\": \"+91 99999 88888\",\n  \"company_address\": \"456 Commerce Road, Industrial Area, Chennai\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/settings/company", "host": ["{{baseUrl}}"], "path": ["settings", "company"] }
+          }
+        },
+        {
+          "name": "Update Localization Settings",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"timezone\": \"UTC\",\n  \"date_format\": \"DD-MM-YYYY\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/settings/localization", "host": ["{{baseUrl}}"], "path": ["settings", "localization"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
       "item": [
         {
           "name": "Health Check",
           "request": {
             "auth": { "type": "noauth" },
             "method": "GET",
-            "url": { "raw": "http://localhost:5000/health", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["health"] }
+            "url": { "raw": "http://localhost:8000/health", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["health"] }
           },
           "response": [
             {
@@ -1159,6 +1744,14 @@
               "body": "{\n  \"success\": true,\n  \"message\": \"CRM API is running\",\n  \"version\": \"1.0.0\",\n  \"environment\": \"development\",\n  \"timestamp\": \"2026-07-17T06:00:00.000Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "Get Swagger UI Docs",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "http://localhost:8000/api-docs", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api-docs"] }
+          }
         }
       ]
     }

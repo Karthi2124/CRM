@@ -28,6 +28,21 @@ import { initProductUnit, ProductUnit } from './ProductUnit';
 import { initTax, Tax } from './Tax';
 import { initProduct, Product } from './Product';
 import { initPriceList, PriceList } from './PriceList';
+import { initQuotation, Quotation } from './Quotation';
+import { initQuotationItem, QuotationItem } from './QuotationItem';
+import { initInvoice, Invoice } from './Invoice';
+import { initInvoiceItem, InvoiceItem } from './InvoiceItem';
+import { initPayment, Payment } from './Payment';
+import { initCreditNote, CreditNote } from './CreditNote';
+import { initTask, Task } from './Task';
+import { initTaskComment, TaskComment } from './TaskComment';
+import { initTaskAttachment, TaskAttachment } from './TaskAttachment';
+import { initCalendarEvent, CalendarEvent } from './CalendarEvent';
+import { initNotification, Notification } from './Notification';
+import { initNotificationTemplate, NotificationTemplate } from './NotificationTemplate';
+import { initNotificationPreference, NotificationPreference } from './NotificationPreference';
+import { initUploadedFile, UploadedFile } from './UploadedFile';
+import { initSetting, Setting } from './Setting';
 
 const env = process.env.NODE_ENV || 'development';
 // Resolve the path to the root config/config.js
@@ -78,6 +93,21 @@ initProductUnit(sequelize);
 initTax(sequelize);
 initProduct(sequelize);
 initPriceList(sequelize);
+initQuotation(sequelize);
+initQuotationItem(sequelize);
+initInvoice(sequelize);
+initInvoiceItem(sequelize);
+initPayment(sequelize);
+initCreditNote(sequelize);
+initTask(sequelize);
+initTaskComment(sequelize);
+initTaskAttachment(sequelize);
+initCalendarEvent(sequelize);
+initNotification(sequelize);
+initNotificationTemplate(sequelize);
+initNotificationPreference(sequelize);
+initUploadedFile(sequelize);
+initSetting(sequelize);
 
 // Define associations
 
@@ -202,6 +232,114 @@ Product.belongsTo(Tax, { foreignKey: 'tax_id', as: 'tax' });
 Product.hasMany(PriceList, { foreignKey: 'product_id', as: 'priceLists' });
 PriceList.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
 
+// Quotation Associations
+Customer.hasMany(Quotation, { foreignKey: 'customer_id', as: 'quotations' });
+Quotation.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
+
+Lead.hasMany(Quotation, { foreignKey: 'lead_id', as: 'quotations' });
+Quotation.belongsTo(Lead, { foreignKey: 'lead_id', as: 'lead' });
+
+Opportunity.hasMany(Quotation, { foreignKey: 'opportunity_id', as: 'quotations' });
+Quotation.belongsTo(Opportunity, { foreignKey: 'opportunity_id', as: 'opportunity' });
+
+User.hasMany(Quotation, { foreignKey: 'created_by', as: 'quotations' });
+Quotation.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+Quotation.hasMany(QuotationItem, { foreignKey: 'quotation_id', as: 'items', onDelete: 'CASCADE' });
+QuotationItem.belongsTo(Quotation, { foreignKey: 'quotation_id', as: 'quotation' });
+
+Product.hasMany(QuotationItem, { foreignKey: 'product_id', as: 'quotationItems' });
+QuotationItem.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+
+Tax.hasMany(QuotationItem, { foreignKey: 'tax_id', as: 'quotationItems' });
+QuotationItem.belongsTo(Tax, { foreignKey: 'tax_id', as: 'tax' });
+
+// Invoice Associations
+Customer.hasMany(Invoice, { foreignKey: 'customer_id', as: 'invoices' });
+Invoice.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
+
+Quotation.hasMany(Invoice, { foreignKey: 'quotation_id', as: 'invoices' });
+Invoice.belongsTo(Quotation, { foreignKey: 'quotation_id', as: 'quotation' });
+
+User.hasMany(Invoice, { foreignKey: 'created_by', as: 'invoices' });
+Invoice.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+Invoice.hasMany(InvoiceItem, { foreignKey: 'invoice_id', as: 'items', onDelete: 'CASCADE' });
+InvoiceItem.belongsTo(Invoice, { foreignKey: 'invoice_id', as: 'invoice' });
+
+Product.hasMany(InvoiceItem, { foreignKey: 'product_id', as: 'invoiceItems' });
+InvoiceItem.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+
+Tax.hasMany(InvoiceItem, { foreignKey: 'tax_id', as: 'invoiceItems' });
+InvoiceItem.belongsTo(Tax, { foreignKey: 'tax_id', as: 'tax' });
+
+Invoice.hasMany(Payment, { foreignKey: 'invoice_id', as: 'payments', onDelete: 'CASCADE' });
+Payment.belongsTo(Invoice, { foreignKey: 'invoice_id', as: 'invoice' });
+
+User.hasMany(Payment, { foreignKey: 'created_by', as: 'payments' });
+Payment.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+Invoice.hasMany(CreditNote, { foreignKey: 'invoice_id', as: 'creditNotes', onDelete: 'CASCADE' });
+CreditNote.belongsTo(Invoice, { foreignKey: 'invoice_id', as: 'invoice' });
+
+User.hasMany(CreditNote, { foreignKey: 'created_by', as: 'creditNotes' });
+CreditNote.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+// Task Associations
+User.hasMany(Task, { foreignKey: 'assigned_to', as: 'assignedTasks' });
+Task.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignee' });
+
+User.hasMany(Task, { foreignKey: 'created_by', as: 'createdTasks' });
+Task.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+Customer.hasMany(Task, { foreignKey: 'customer_id', as: 'tasks' });
+Task.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
+
+Lead.hasMany(Task, { foreignKey: 'lead_id', as: 'tasks' });
+Task.belongsTo(Lead, { foreignKey: 'lead_id', as: 'lead' });
+
+Opportunity.hasMany(Task, { foreignKey: 'opportunity_id', as: 'tasks' });
+Task.belongsTo(Opportunity, { foreignKey: 'opportunity_id', as: 'opportunity' });
+
+Task.hasMany(TaskComment, { foreignKey: 'task_id', as: 'comments', onDelete: 'CASCADE' });
+TaskComment.belongsTo(Task, { foreignKey: 'task_id', as: 'task' });
+
+User.hasMany(TaskComment, { foreignKey: 'user_id', as: 'taskComments' });
+TaskComment.belongsTo(User, { foreignKey: 'user_id', as: 'author' });
+
+Task.hasMany(TaskAttachment, { foreignKey: 'task_id', as: 'attachments', onDelete: 'CASCADE' });
+TaskAttachment.belongsTo(Task, { foreignKey: 'task_id', as: 'task' });
+
+User.hasMany(TaskAttachment, { foreignKey: 'uploaded_by', as: 'taskAttachments' });
+TaskAttachment.belongsTo(User, { foreignKey: 'uploaded_by', as: 'uploader' });
+
+// CalendarEvent Associations
+User.hasMany(CalendarEvent, { foreignKey: 'assigned_to', as: 'assignedEvents' });
+CalendarEvent.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignee' });
+
+User.hasMany(CalendarEvent, { foreignKey: 'created_by', as: 'createdEvents' });
+CalendarEvent.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
+
+Customer.hasMany(CalendarEvent, { foreignKey: 'customer_id', as: 'events' });
+CalendarEvent.belongsTo(Customer, { foreignKey: 'customer_id', as: 'customer' });
+
+Lead.hasMany(CalendarEvent, { foreignKey: 'lead_id', as: 'events' });
+CalendarEvent.belongsTo(Lead, { foreignKey: 'lead_id', as: 'lead' });
+
+Opportunity.hasMany(CalendarEvent, { foreignKey: 'opportunity_id', as: 'events' });
+CalendarEvent.belongsTo(Opportunity, { foreignKey: 'opportunity_id', as: 'opportunity' });
+
+// Notification Associations
+User.hasMany(Notification, { foreignKey: 'recipient_id', as: 'notifications', onDelete: 'CASCADE' });
+Notification.belongsTo(User, { foreignKey: 'recipient_id', as: 'recipient' });
+
+User.hasMany(NotificationPreference, { foreignKey: 'user_id', as: 'notificationPreferences', onDelete: 'CASCADE' });
+NotificationPreference.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// UploadedFile Associations
+User.hasMany(UploadedFile, { foreignKey: 'uploaded_by', as: 'uploadedFiles', onDelete: 'SET NULL' });
+UploadedFile.belongsTo(User, { foreignKey: 'uploaded_by', as: 'uploader' });
+
 export {
   sequelize,
   Sequelize,
@@ -233,4 +371,19 @@ export {
   Tax,
   Product,
   PriceList,
+  Quotation,
+  QuotationItem,
+  Invoice,
+  InvoiceItem,
+  Payment,
+  CreditNote,
+  Task,
+  TaskComment,
+  TaskAttachment,
+  CalendarEvent,
+  Notification,
+  NotificationTemplate,
+  NotificationPreference,
+  UploadedFile,
+  Setting,
 };

@@ -20,30 +20,88 @@ const authService = new AuthService(authRepository);
 const authController = new AuthController(authService);
 
 /**
- * @route   POST /api/auth/login
- * @desc    Authenticate user and return JWT tokens
- * @access  Public
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Authenticate user and return JWT tokens
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               rememberMe:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
  */
 router.post('/login', loginValidator, authController.login);
 
 /**
- * @route   POST /api/auth/logout
- * @desc    Logout user and invalidate refresh token session
- * @access  Private
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user and invalidate refresh token session
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       401:
+ *         description: Unauthorized
  */
 router.post('/logout', authenticate, logoutValidator, authController.logout);
 
 /**
- * @route   POST /api/auth/refresh-token
- * @desc    Issue a new access token using a valid refresh token (token rotation)
- * @access  Public
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     summary: Issue a new access token using a valid refresh token (token rotation)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Tokens rotated successfully
  */
 router.post('/refresh-token', refreshTokenValidator, authController.refreshToken);
 
 /**
- * @route   GET /api/auth/profile
- * @desc    Get current authenticated user profile
- * @access  Private
+ * @swagger
+ * /auth/profile:
+ *   get:
+ *     summary: Get current authenticated user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile data retrieved
+ *       401:
+ *         description: Unauthorized
  */
 router.get('/profile', authenticate, authController.profile);
 

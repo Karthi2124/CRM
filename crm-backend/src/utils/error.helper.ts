@@ -92,9 +92,20 @@ export function globalErrorHandler(
 
   // Always log the error
   if (!isOperational) {
+    const error: any = err;
+
     logger.error('UNHANDLED ERROR', {
-      message: err.message,
-      stack: err.stack,
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+
+      // Sequelize / MySQL details
+      sqlMessage: error.parent?.sqlMessage || error.original?.sqlMessage,
+      sql: error.parent?.sql || error.original?.sql,
+      code: error.parent?.code || error.original?.code,
+      errno: error.parent?.errno || error.original?.errno,
+      sqlState: error.parent?.sqlState || error.original?.sqlState,
+
       url: req.url,
       method: req.method,
       ip: req.ip,
@@ -108,11 +119,18 @@ export function globalErrorHandler(
     });
   }
 
+  const error: any = err;
+
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === 'development' && !isOperational
-      ? { stack: err.stack }
+    ...(process.env.NODE_ENV === 'development'
+      ? {
+          stack: error.stack,
+          sqlMessage: error.parent?.sqlMessage || error.original?.sqlMessage,
+          sql: error.parent?.sql || error.original?.sql,
+          code: error.parent?.code || error.original?.code,
+        }
       : {}),
   });
 }
