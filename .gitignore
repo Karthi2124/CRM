@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Next.js
+web/.next/
+web/out/
+
+# Uploads
+server/uploads/
+
+# Logs
+*.log
+logs/
+
+# Build
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+server/uploads.zip
