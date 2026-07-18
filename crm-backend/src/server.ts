@@ -30,6 +30,8 @@ import settingsRoutes from './settings/settings.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.config';
 import { seedDefaultTemplates } from './notifications/notifications.service';
+import { apiLimiter, authLimiter } from './middleware/rate-limit.middleware';
+import { xssSanitizer } from './middleware/xss.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,9 +45,14 @@ app.use(cors({
   credentials: true,
 }));
 
+// ─── Rate Limiting ───────────────────────────────────────────────────────────
+app.use('/api/auth', authLimiter);
+app.use('/api', apiLimiter);
+
 // ─── Request Parsing ──────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(xssSanitizer);
 
 // ─── Compression & Logging ────────────────────────────────────────────────────
 app.use(compression());

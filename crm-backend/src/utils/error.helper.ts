@@ -124,7 +124,7 @@ export function globalErrorHandler(
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === 'development'
+    ...(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
       ? {
           stack: error.stack,
           sqlMessage: error.parent?.sqlMessage || error.original?.sqlMessage,
