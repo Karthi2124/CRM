@@ -25,7 +25,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Overview",
     items: [
-      { label: "Dashboard", href: "/", icon: <LayoutDashboard size={17} /> },
+      { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard size={17} /> },
     ],
   },
   {
@@ -75,7 +75,7 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+    href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
 
   return (
     <div className={`app-sidebar ${collapsed ? "collapsed" : ""}`}>

@@ -26,7 +26,7 @@ export default function LoginPage() {
       setToken(accessToken);
       setRefreshToken(refreshToken);
       setStoredUser(user as unknown as Record<string, unknown>);
-      router.push("/");
+      router.push("/dashboard");
     } catch (err) {
       const axiosErr = err as AxiosError<{ message: string }>;
       setError(axiosErr.response?.data?.message ?? "Invalid credentials. Please try again.");
