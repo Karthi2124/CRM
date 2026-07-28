@@ -61,7 +61,7 @@ export default function CustomersPage() {
   };
 
   const columns = [
-    { key: "name", label: "Name", render: (r: Customer) => <span className="cell-primary">{r.first_name} {r.last_name}</span> },
+    { key: "name", label: "Name", render: (r: Customer) => <span className="cell-primary">{r.name || `${r.first_name || ""} ${r.last_name || ""}`.trim() || "Unknown"}</span> },
     { key: "company_name", label: "Company", render: (r: Customer) => r.company_name ?? <span className="text-muted">—</span> },
     { key: "email", label: "Email", render: (r: Customer) => r.email ?? <span className="text-muted">—</span> },
     { key: "type", label: "Type", render: (r: Customer) => <span className="badge badge-info">{r.type}</span> },

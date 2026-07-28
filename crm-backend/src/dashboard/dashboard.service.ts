@@ -27,7 +27,7 @@ export async function getKpiSummary(): Promise<KpiSummary> {
 
   const pipelineResult = await Opportunity.findOne({
     where: {
-      opportunity_stage_id: activeStageIds,
+      stage_id: activeStageIds,
     },
     attributes: [
       [fn('SUM', col('value')), 'totalValue'],
@@ -125,7 +125,7 @@ export async function getChartData(): Promise<ChartDataPayload> {
   // 3. Opportunity Pipeline by Stage
   const pipelineData = await Opportunity.findAll({
     attributes: [
-      'opportunity_stage_id',
+      'stage_id',
       [fn('SUM', col('value')), 'totalValue'],
       [fn('COUNT', col('id')), 'count'],
     ],
@@ -136,7 +136,7 @@ export async function getChartData(): Promise<ChartDataPayload> {
         attributes: ['name'],
       },
     ],
-    group: ['opportunity_stage_id', 'stage.id', 'stage.name'],
+    group: ['stage_id', 'stage.id', 'stage.name'],
     raw: true,
   });
 

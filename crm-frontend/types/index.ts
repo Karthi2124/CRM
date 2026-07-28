@@ -31,6 +31,7 @@ export interface Permission {
 
 export interface Customer {
   id: string;
+  name?: string;
   first_name: string;
   last_name: string;
   email?: string;

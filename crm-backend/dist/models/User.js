@@ -20,6 +20,10 @@ function initUser(sequelize) {
             allowNull: false,
             unique: true,
         },
+        employee_id: {
+            type: sequelize_1.DataTypes.STRING(50),
+            allowNull: true,
+        },
         first_name: {
             type: sequelize_1.DataTypes.STRING(100),
             allowNull: false,
@@ -32,12 +36,26 @@ function initUser(sequelize) {
             type: sequelize_1.DataTypes.STRING(150),
             allowNull: false,
             unique: true,
-            validate: {
-                isEmail: true,
-            },
+            validate: { isEmail: true },
         },
         phone: {
             type: sequelize_1.DataTypes.STRING(20),
+            allowNull: true,
+        },
+        avatar_url: {
+            type: sequelize_1.DataTypes.STRING(500),
+            allowNull: true,
+        },
+        address: {
+            type: sequelize_1.DataTypes.TEXT,
+            allowNull: true,
+        },
+        date_of_birth: {
+            type: sequelize_1.DataTypes.DATEONLY,
+            allowNull: true,
+        },
+        gender: {
+            type: sequelize_1.DataTypes.ENUM('male', 'female', 'other'),
             allowNull: true,
         },
         password_hash: {
@@ -58,6 +76,14 @@ function initUser(sequelize) {
             defaultValue: 'active',
         },
         last_login_at: {
+            type: sequelize_1.DataTypes.DATE,
+            allowNull: true,
+        },
+        password_reset_token: {
+            type: sequelize_1.DataTypes.STRING(255),
+            allowNull: true,
+        },
+        password_reset_expires_at: {
             type: sequelize_1.DataTypes.DATE,
             allowNull: true,
         },
