@@ -460,21 +460,125 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer CTA ───────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: "1px solid var(--border-subtle)", padding: "5rem 1.5rem", background: "var(--bg-elevated)", textAlign: "center" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.75rem", letterSpacing: "-0.03em" }}>
-            Ready to Connect Your Team?
-          </h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: "520px", margin: "0 auto 2rem", lineHeight: 1.5 }}>
-            Access the secure workspace dashboard instantly to manage system settings, log in, or review team audit logs.
-          </p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
-            <Link href={isLoggedIn ? "/dashboard" : "/login"} className="btn btn-primary btn-lg" style={{ boxShadow: "0 4px 12px rgba(79, 70, 229, 0.2)" }}>
-              {isLoggedIn ? "Access Dashboard" : "Sign In to Workspace"} <ArrowRight size={16} />
-            </Link>
+      <footer style={{ borderTop: "1px solid var(--border-subtle)", padding: "5rem 1.5rem 3rem", background: "var(--bg-elevated)" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          {/* Main CTA Block */}
+          <div style={{ textAlign: "center", marginBottom: "5rem" }}>
+            <h2 style={{ fontSize: "2.25rem", fontWeight: 800, marginBottom: "0.75rem", letterSpacing: "-0.03em" }}>
+              Ready to Connect Your Team?
+            </h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: "1rem", maxWidth: "520px", margin: "0 auto 2rem", lineHeight: 1.5 }}>
+              Access the secure workspace dashboard instantly to manage system settings, log in, or review team audit logs.
+            </p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <Link href={isLoggedIn ? "/dashboard" : "/login"} className="btn btn-primary btn-lg" style={{ boxShadow: "0 6px 20px rgba(79, 70, 229, 0.2)" }}>
+                {isLoggedIn ? "Access Dashboard" : "Sign In to Workspace"} <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
-          <div style={{ marginTop: "4rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-            © 2026 Enterprise CRM Platform. Hardened security, hybrid caching, SQL indexes, Next.js App Router workspace.
+
+          {/* Grid Layout Footer Details */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "2.5rem",
+              borderTop: "1px solid var(--border-subtle)",
+              paddingTop: "4rem",
+              paddingBottom: "3rem",
+              textAlign: "left",
+            }}
+          >
+            {/* Column 1: Company Logo / Address */}
+            <div style={{ gridColumn: "span 2", minWidth: "250px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Building2 size={15} color="white" />
+                </div>
+                <span style={{ fontWeight: 800, fontSize: "1rem", letterSpacing: "-0.03em" }}>
+                  Loopline
+                </span>
+              </div>
+              <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                Loopline Technologies designs high-performance operational infrastructures, robust CRM interfaces, and secure data storage schemas for growing business operations.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                <div>📍 Loopline HQ, Tech Park Phase-II, Bangalore, India</div>
+                <div>✉️ support@loopline.co</div>
+                <div>📞 +91 80 4912 3456</div>
+              </div>
+            </div>
+
+            {/* Column 2: Solutions */}
+            <div>
+              <h5 style={{ fontWeight: 700, fontSize: "0.8125rem", color: "var(--text-primary)", marginBottom: "1.25rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Solutions
+              </h5>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.8125rem" }}>
+                <a href="#features" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Enterprise CRM</a>
+                <a href="#features" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Document Vault</a>
+                <a href="#features" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Invoicing Ledger</a>
+                <a href="#features" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Team Calendars</a>
+              </div>
+            </div>
+
+            {/* Column 3: Platform */}
+            <div>
+              <h5 style={{ fontWeight: 700, fontSize: "0.8125rem", color: "var(--text-primary)", marginBottom: "1.25rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Technology
+              </h5>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.8125rem" }}>
+                <a href="#architecture" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Next.js App Router</a>
+                <a href="#architecture" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Tailwind CSS v4</a>
+                <a href="#architecture" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Redis TTL Cache</a>
+                <a href="#architecture" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Security Headers</a>
+              </div>
+            </div>
+
+            {/* Column 4: Links */}
+            <div>
+              <h5 style={{ fontWeight: 700, fontSize: "0.8125rem", color: "var(--text-primary)", marginBottom: "1.25rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Company
+              </h5>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.8125rem" }}>
+                <span style={{ color: "var(--text-secondary)" }}>About Us</span>
+                <span style={{ color: "var(--text-secondary)" }}>Terms of Service</span>
+                <span style={{ color: "var(--text-secondary)" }}>Privacy Policy</span>
+                <span style={{ color: "var(--text-secondary)" }}>Developer API</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Copyright bar */}
+          <div
+            style={{
+              borderTop: "1px solid var(--border-subtle)",
+              paddingTop: "2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "0.75rem",
+              color: "var(--text-muted)",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
+            <div>
+              © 2026 Loopline Technologies Private Limited. All rights reserved.
+            </div>
+            <div>
+              Designed with security, hybrid caching, and database index optimization.
+            </div>
           </div>
         </div>
       </footer>
