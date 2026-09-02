@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Temporary uploaded files
+temp_*
+
+# YOLO generated folders
+runs/
+
+# Model files
+*.pt
+
+# Environment files
+.env
+
+# macOS
+.DS_Store
